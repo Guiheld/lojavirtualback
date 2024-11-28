@@ -4,6 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const authRoutes = require('./routes/authRoutes');
 const produtosRoutes = require('./routes/produtoRoutes');
+const carrinhosRoutes = require('./routes/carrinhoRoutes');
 const User = require('./models/User');
 
 var indexRouter = require('./routes/index');
@@ -22,7 +23,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(authRoutes);
-app.use(produtosRoutes);
+app.use('/products', produtosRoutes);
+app.use('/carrinho', carrinhosRoutes);
 
 // Sincroniza o banco de dados e cria as tabelas antes de iniciar o servidor
 (async () => {
