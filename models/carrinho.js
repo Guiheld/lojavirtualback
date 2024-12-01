@@ -59,6 +59,4 @@ Carrinho.belongsTo(User, { foreignKey: 'userId' });
 Carrinho.belongsToMany(Produto, { through: CarrinhoProduto, foreignKey: 'carrinhoId', otherKey: 'productId' });
 Produto.belongsToMany(Carrinho, { through: CarrinhoProduto, foreignKey: 'productId', otherKey: 'carrinhoId' });
 
-console.log('Associações Carrinho.belongsToMany Produto definidas');
-
 module.exports = Carrinho;
