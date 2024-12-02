@@ -8,6 +8,7 @@ const userRoutes = require('./routes/user');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
+var FornecedorRoutes = require('./routes/fornecedorRoutes');
 
 const { syncDatabase, testConnection, } = require('./config/database'); // Função de sincronização
 require('dotenv').config();
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/products', produtosRoutes);
 app.use('/carrinho', carrinhosRoutes);
 app.use('/users', userRoutes);
+app.use('/fornecedor', FornecedorRoutes);
 app.use(express.json());
 
 // Sincroniza o banco de dados e cria as tabelas antes de iniciar o servidor

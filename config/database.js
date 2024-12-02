@@ -10,7 +10,6 @@ const sequelize = new Sequelize(`lojavirtual`, 'LojaVirtual', 'LojaVirtualUser',
 const testConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log('Conexão com o banco de dados verificada!');
   } catch (error) {
     console.error('Erro ao conectar ao banco de dados:', error.message);
     process.exit(1); // Finaliza o processo se a conexão falhar

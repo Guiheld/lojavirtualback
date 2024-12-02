@@ -1,35 +1,47 @@
-require('dotenv').config();
+const { sequelize } = require('../config/database');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+
+// Função para verificar se o usuário existe na tabela
+const getUserById = async (id) => {
+    try {
+        const [user] = await sequelize.query(
+            `SELECT * FROM users WHERE id = :id`,  // Usar :id para corresponder ao parâmetro
+            {
+                replacements: { id: id },  // Usar `id` no objeto de substituições
+                type: sequelize.QueryTypes.SELECT // Define o tipo de consulta como SELECT
+            }
+        );
+        return user; // Retorna o usuário encontrado ou `undefined` se não houver resultados
+    } catch (error) {
+        console.error('Erro ao buscar usuário no banco de dados:', error);
+        throw new Error('Erro interno ao buscar usuário');
+    }
+};
 
 const authMiddleware = async (req, res, next) => {
-    console.log("DEBUG BACKEND - authMiddleware, o que chegou: ", req.headers);
-
-    // Obter o token do cabeçalho Authorization
-    const authHeader = req.headers['authorization'];
-    console.log("DEBUG BACKEND - Authorization:", authHeader);
-    const token = authHeader && authHeader.split(' ')[1];
-
-    // Verificar se o token existe
-    if (!token) {
-        return res.status(401).json({ message: 'Sem token, sem site.' });
-    }
-
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("DEBUG BACKEND - Token decodificado:", decoded);
-
-        const user = await User.findById(decoded.userId); 
-        if (!user) {
-            return res.status(401).json({ message: 'Usuário não existe ou foi deletado.' });
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).json({ message: 'Acesso negado. Token não fornecido.' });
         }
 
-        req.user = decoded;
+        // Verificar se o token é válido
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(decoded);  // Verifique se `decoded` contém o campo `userId`
 
+        // Verificar se o usuário existe no banco de dados
+        const user = await getUserById(decoded.userId); // Alterado de `decoded.id` para `decoded.userId`
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        // Adicionar os dados do usuário ao objeto `req` para uso posterior
+        req.user = user;
+        console.log("USUARIO AUTHENTICADO !!!")
         next();
     } catch (error) {
-        console.error('Erro no token:', error.message);
-        res.status(400).json({ message: 'Erro no token.' });
+        console.error('Erro na autenticação do usuário:', error);
+        return res.status(401).json({ message: 'Token inválido ou expirado.' });
     }
 };
 
