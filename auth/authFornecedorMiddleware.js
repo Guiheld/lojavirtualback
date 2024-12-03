@@ -3,6 +3,7 @@ const { sequelize } = require('../models'); // Certifique-se de que o sequelize 
 require('dotenv').config();
 
 const authFornecedorMiddleware = async (req, res, next) => {
+    console.log("chegou")
     try {
         // Obter o token do cabeçalho Authorization
         const token = req.header('Authorization')?.replace('Bearer ', '');

@@ -32,15 +32,6 @@ exports.register = async (req, res) => {
       // Cria o carrinho para o novo usuário
       await Carrinho.create({ userId: user.id });
   
-      // Cria o produto placeholder para o novo usuário
-      await Produto.create({
-        nome: 'Produto placeholder',
-        preco: 0.0,
-        descricao: 'Produto placeholder gerado para novos usuários.',
-        estoque: 100,
-        userId: user.id
-      });
-  
       // Cria o token JWT para o novo usuário
       const token = jwt.sign(
         { userId: user.id, email: user.email },
